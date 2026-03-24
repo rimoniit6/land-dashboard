@@ -1,0 +1,59 @@
+﻿
+> land-dashboard@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.1 (Turbopack)
+- Environments: .env
+
+node.exe : ΓÜá The "middleware" file convention is 
+deprecated. Please use "proxy" instead. Learn more: 
+https://nextjs.org/docs/messages/middleware-to-proxy
+At C:\Users\mdrim\AppData\Roaming\npm\npm.ps1:24 char:5
++     & "node$exe"  
+"$basedir/node_modules/npm/bin/npm-cli.js" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá The "mi 
+   ddle...leware-to-proxy:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 7.2s
+  Running TypeScript ...
+Failed to type check.
+
+.next/types/validator.ts:198:31
+Type error: Type 'typeof import("E:/Land/land-dashboard/s
+rc/app/api/contributions/[id]/route")' does not satisfy 
+the constraint 
+'RouteHandlerConfig<"/api/contributions/[id]">'.
+  Types of property 'DELETE' are incompatible.
+    Type '(req: Request, { params }: { params: { id: 
+string; }; }) => Promise<NextResponse<{ success: 
+boolean; }> | NextResponse<{ error: string; }>>' is not 
+assignable to type '(request: NextRequest, context: { 
+params: Promise<{ id: string; }>; }) => void | Response 
+| Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are 
+incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is 
+not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ 
+id: string; }>' but required in type '{ id: string; }'.
+
+  [90m196 |[0m   [36mtype[0m 
+__IsExpected<[33mSpecific[0m [36mextends[0m [33mRout
+eHandlerConfig[0m<[32m"/api/contributions/[id]"[0m>> 
+= [33mSpe...[0m
+  [90m197 |[0m   [36mconst[0m handler = {} 
+[36mas[0m [36mtypeof[0m [36mimport[0m([32m"../../s
+rc/app/api/contributions/[id]/route.js"[0m)
+[31m[1m>[0m [90m198 |[0m   [36mtype[0m __Check = 
+__IsExpected<[36mtypeof[0m handler>
+  [90m    |[0m                               
+[31m[1m^[0m
+  [90m199 |[0m   [90m// @ts-ignore[0m
+  [90m200 |[0m   [36mtype[0m __Unused = __Check
+  [90m201 |[0m }
+Next.js build worker exited with code: 1 and signal: null

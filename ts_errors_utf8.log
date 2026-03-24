@@ -1,0 +1,13 @@
+﻿src/app/(dashboard)/activity/page.tsx(8,16): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'ActivityLogOrderByWithRelationInput | ActivityLogOrderByWithRelationInput[]'.
+src/app/(dashboard)/activity/page.tsx(33,33): error TS2339: Property 'timestamp' does not exist on type '{ id: number; description: string; createdAt: Date; actionType: string; }'.
+src/app/api/distributions/[id]/route.ts(32,94): error TS2339: Property 'title' does not exist on type '{ id: number; method: string; createdAt: Date; notes: string | null; date: Date; totalAmount: number; }'.
+src/app/api/distributions/route.ts(34,11): error TS2353: Object literal may only specify known properties, and 'title' does not exist in type '(Without<DistributionCreateInput, DistributionUncheckedCreateInput> & DistributionUncheckedCreateInput) | (Without<...> & DistributionCreateInput)'.
+src/app/api/loans/[id]/repayments/route.ts(26,11): error TS2561: Object literal may only specify known properties, but 'paymentDate' does not exist in type 'Without<LoanRepaymentCreateInput, LoanRepaymentUncheckedCreateInput> & LoanRepaymentUncheckedCreateInput'. Did you mean to write 'repaymentDate'?
+src/app/api/loans/route.ts(23,11): error TS2353: Object literal may only specify known properties, and 'reason' does not exist in type 'Without<LoanCreateInput, LoanUncheckedCreateInput> & LoanUncheckedCreateInput'.
+src/app/api/loans/route.ts(44,67): error TS2551: Property 'member' does not exist on type '{ id: number; memberId: number; status: string; createdAt: Date; notes: string | null; loanAmount: number; loanDate: Date; totalRepaid: number; remainingBalance: number; }'. Did you mean 'memberId'?
+src/components/dashboard/OverviewChart.tsx(77,13): error TS2322: Type '(value: number) => [string, undefined]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: number) => [string, undefined]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+src/components/distributions/DistributionList.tsx(96,34): error TS2304: Cannot find name 'Users'.

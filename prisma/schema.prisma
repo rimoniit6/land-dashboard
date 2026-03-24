@@ -1,0 +1,177 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id               Int              @id @default(autoincrement())
+  memberId         String           @unique
+  fullName         String
+  phone            String?
+  address          String?
+  joinDate         DateTime         @default(now())
+  status           String           @default("ACTIVE") // ACTIVE | INACTIVE
+  nomineeName      String?
+  nomineeRelation  String?
+  nomineePhone     String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  contributions    Contribution[]
+  fines            Fine[]
+  loans            Loan[]
+  investments      Investment[]
+  distributions    DistributionItem[]
+  transactions     Transaction[]
+}
+
+model Contribution {
+  id          Int      @id @default(autoincrement())
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    Int
+  month       Int
+  year        Int
+  amount      Float
+  paymentDate DateTime
+  notes       String?
+  isLate      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Fine {
+  id          Int      @id @default(autoincrement())
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    Int
+  month       Int
+  year        Int
+  fineAmount  Float
+  paymentDate DateTime
+  reason      String?
+  createdAt   DateTime @default(now())
+}
+
+model Loan {
+  id               Int             @id @default(autoincrement())
+  member           Member          @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId         Int
+  loanAmount       Float
+  loanDate         DateTime
+  totalRepaid      Float           @default(0)
+  remainingBalance Float
+  status           String          @default("ACTIVE") // ACTIVE | PAID
+  durationDays     Int?
+  notes            String?
+  createdAt        DateTime        @default(now())
+  repayments       LoanRepayment[]
+}
+
+model LoanRepayment {
+  id             Int      @id @default(autoincrement())
+  loan           Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  loanId         Int
+  memberId       Int
+  amount         Float
+  repaymentDate  DateTime
+  notes          String?
+  createdAt      DateTime @default(now())
+}
+
+model Investment {
+  id               Int       @id @default(autoincrement())
+  member           Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId         Int
+  investmentAmount Float
+  investmentDate   DateTime
+  businessType     String?
+  profitAmount     Float?
+  profitDate       DateTime?
+  memberProfit     Float?    // 10%
+  companyProfit    Float?    // 90%
+  status           String    @default("ACTIVE") // ACTIVE | PROFIT_RECORDED | RETURNED
+  durationDays     Int?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  returns          InvestmentReturn[]
+}
+
+model InvestmentReturn {
+  id             Int        @id @default(autoincrement())
+  investment     Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  investmentId   Int
+  returnType     String     // PROFIT | PRINCIPAL
+  amount         Float
+  returnDate     DateTime
+  memberProfit   Float?
+  companyProfit  Float?
+  createdAt      DateTime   @default(now())
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  title       String
+  amount      Float
+  category    String
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Distribution {
+  id          Int                @id @default(autoincrement())
+  totalAmount Float
+  method      String             // ALL | SELECTED
+  date        DateTime
+  notes       String?
+  createdAt   DateTime           @default(now())
+  items       DistributionItem[]
+}
+
+model DistributionItem {
+  id             Int          @id @default(autoincrement())
+  distribution   Distribution @relation(fields: [distributionId], references: [id], onDelete: Cascade)
+  distributionId Int
+  member         Member       @relation(fields: [memberId], references: [id])
+  memberId       Int
+  amount         Float
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  type        String   // CONTRIBUTION | FINE | LOAN | LOAN_REPAYMENT | INVESTMENT | PROFIT | EXPENSE | DISTRIBUTION | DEPOSIT
+  member      Member?  @relation(fields: [memberId], references: [id])
+  memberId    Int?
+  amount      Float
+  date        DateTime
+  description String?
+  reference   String?  // optional reference ID to source record
+  createdAt   DateTime @default(now())
+}
+
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  actionType  String
+  description String
+  createdAt   DateTime @default(now())
+}
+
+model CompanyAccount {
+  id      Int   @id @default(1)
+  balance Float @default(0)
+}
+
+model CompanySetting {
+  id              Int    @id @default(1)
+  companyName     String @default("LAND Group")
+  rules           String @default("")
+  description     String @default("")
+  bankName        String @default("")
+  accountHolder   String @default("")
+  accountNumber   String @default("")
+  mobileNumber    String @default("")
+}

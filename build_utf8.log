@@ -1,0 +1,63 @@
+﻿
+> land-dashboard@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.1 (Turbopack)
+- Environments: .env
+
+node.exe : ΓÜá The "middleware" file convention is 
+deprecated. Please use "proxy" instead. Learn more: 
+https://nextjs.org/docs/messages/middleware-to-proxy
+At C:\Users\mdrim\AppData\Roaming\npm\npm.ps1:24 
+char:5
++     & "node$exe"  
+"$basedir/node_modules/npm/bin/npm-cli.js" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá The 
+    "middle...leware-to-proxy:String) [], RemoteExc  
+  eption
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./src/app/(dashboard)/reports/page.tsx:7:1
+Module not found: Can't resolve 'jspdf-autotable'
+  [90m 5 |[0m [36mimport[0m * [36mas[0m 
+[33mXLSX[0m [36mfrom[0m [32m"xlsx"[0m;
+  [90m 6 |[0m [36mimport[0m jsPDF [36mfrom[0m 
+[32m"jspdf"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m 
+[32m"jspdf-autotable"[0m;
+  [90m   |[0m 
+[31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m
+  [90m 9 |[0m [36mexport[0m [36mdefault[0m 
+[36mfunction[0m [33mReportsPage[0m() {
+  [90m10 |[0m   [36mconst[0m [loading, 
+setLoading] = useState([36mfalse[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(dashboard)/reports/page.tsx [Client 
+Component Browser]
+    ./src/app/(dashboard)/reports/page.tsx [Server 
+Component]
+
+  Client Component SSR:
+    ./src/app/(dashboard)/reports/page.tsx [Client 
+Component SSR]
+    ./src/app/(dashboard)/reports/page.tsx [Server 
+Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> 
+(./src/app/(dashboard)/reports/page.tsx:7:1)
+    at <unknown> 
+(https://nextjs.org/docs/messages/module-not-found)
