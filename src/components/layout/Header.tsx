@@ -1,14 +1,22 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { User, Bell } from "lucide-react";
+import { User, Bell, Menu } from "lucide-react";
+import { useSidebar } from "@/components/layout/SidebarContext";
 
 export function Header() {
   const { data: session } = useSession();
+  const { toggle } = useSidebar();
 
   return (
-    <header className="h-16 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sticky top-0 z-10">
-      <div className="flex items-center gap-2">
+    <header className="h-16 bg-white border-b border-zinc-200 flex items-center justify-between px-4 md:px-6 sticky top-0 z-10 w-full">
+      <div className="flex items-center gap-2 md:gap-4">
+        <button 
+          onClick={toggle}
+          className="md:hidden p-2 -ml-2 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 rounded-lg transition-colors"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
       </div>
       
       <div className="flex items-center gap-4">

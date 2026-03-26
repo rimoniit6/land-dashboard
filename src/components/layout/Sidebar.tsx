@@ -14,9 +14,11 @@ import {
   ArrowRightLeft, 
   FileText, 
   Settings,
-  LogOut 
+  LogOut,
+  X
 } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useSidebar } from "@/components/layout/SidebarContext";
 
 const navItems = [
   { name: "Dashboard", href: "/", icon: BarChart3 },
@@ -35,12 +37,32 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { isOpen, setIsOpen } = useSidebar();
 
   return (
-    <div className="flex flex-col w-64 bg-slate-900 border-r border-slate-800 h-screen transition-all select-none hidden md:flex">
-      <div className="flex items-center justify-center h-16 bg-blue-600 shrink-0">
-        <h1 className="text-white text-xl font-bold tracking-widest">LAND PRO</h1>
-      </div>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar Container */}
+      <div className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 h-screen transition-transform duration-300 ease-in-out md:relative md:translate-x-0 select-none flex flex-col
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <div className="flex items-center justify-between h-16 bg-blue-600 shrink-0 px-4 md:justify-center">
+          <h1 className="text-white text-xl font-bold tracking-widest mt-1">LAND PRO</h1>
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="md:hidden text-blue-100 hover:text-white hover:bg-blue-700 p-1.5 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1 scrollbar-thin scrollbar-thumb-slate-700">
         {navItems.map((item) => {
@@ -72,5 +94,6 @@ export function Sidebar() {
         </button>
       </div>
     </div>
+    </>
   );
 }

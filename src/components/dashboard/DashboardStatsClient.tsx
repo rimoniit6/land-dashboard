@@ -113,11 +113,11 @@ export function DashboardStatsClient({ data, recentActivities = [] }: { data: an
 
       {selectedStat && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-6"
           onClick={() => setSelectedStat(null)}
         >
           <div 
-            className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
+            className="bg-white rounded-xl shadow-xl w-full max-w-lg sm:max-w-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200 max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-6 border-b border-zinc-100 bg-slate-50 shrink-0">
@@ -138,8 +138,8 @@ export function DashboardStatsClient({ data, recentActivities = [] }: { data: an
               </button>
             </div>
 
-            <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
-              <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100 flex gap-3">
+            <div className="p-4 sm:p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="bg-blue-50/50 rounded-lg p-3 sm:p-4 border border-blue-100 flex gap-3">
                 <Calculator className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
                 <p className="text-sm text-blue-900 leading-relaxed font-medium">
                   {selectedStat.formula}

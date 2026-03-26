@@ -96,12 +96,12 @@ export function MemberList({ initialMembers }: { initialMembers: any[] }) {
               {filteredMembers.length > 0 ? (
                 filteredMembers.map((member) => (
                   <tr key={member.id} className="hover:bg-slate-50/50 transition">
-                    <td className="px-6 py-4 font-medium text-slate-900">{member.memberId}</td>
-                    <td className="px-6 py-4">{member.fullName}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">{member.memberId}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{member.fullName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {member.phone || <span className="text-slate-400">-</span>}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           member.status === "ACTIVE"
@@ -115,7 +115,7 @@ export function MemberList({ initialMembers }: { initialMembers: any[] }) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {new Date(member.joinDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
+                    <td className="px-6 py-4 text-right space-x-2 whitespace-nowrap">
                       <Link
                         href={`/members/${member.id}`}
                         className="inline-flex p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
