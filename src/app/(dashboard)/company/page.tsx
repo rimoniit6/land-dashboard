@@ -45,5 +45,5 @@ export default async function CompanyAccountPage() {
     take: 10,
   });
 
-   return <CompanyAccountClient account={account} depositHistory={depositHistory} />;
+  return <CompanyAccountClient account={account as any} depositHistory={depositHistory} />;
 }

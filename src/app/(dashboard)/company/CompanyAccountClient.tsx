@@ -5,7 +5,7 @@ import { Plus, PiggyBank, History } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export default function CompanyAccountPage({ account, depositHistory }: { account: { id: number, balance: number }, depositHistory: any[] }) {
+export default function CompanyAccountPage({ account, depositHistory }: any) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,7 @@ export default function CompanyAccountPage({ account, depositHistory }: { accoun
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {depositHistory?.length > 0 ? (
-                   depositHistory.map((tx: { id: number, date: Date | string, description: string, amount: number }) => (
+                  depositHistory.map((tx: any) => (
                     <tr key={tx.id} className="hover:bg-slate-50 transition">
                       <td className="px-6 py-4 whitespace-nowrap">{new Date(tx.date).toLocaleDateString()}</td>
                       <td className="px-6 py-4">{tx.description}</td>

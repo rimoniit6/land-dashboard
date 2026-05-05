@@ -46,9 +46,8 @@ export default function SettingsClient() {
       setTimeout(() => {
         window.location.reload(); 
       }, 1500);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "An error occurred while importing.";
-      setMessage({ text: errorMessage, type: "error" });
+    } catch (error: any) {
+      setMessage({ text: error.message || "An error occurred while importing.", type: "error" });
     } finally {
       setIsImporting(false);
       e.target.value = ""; 
