@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { 
-  Users, Wallet, AlertTriangle, PiggyBank, 
-  Banknote, TrendingUp, HandCoins, Receipt 
-} from "lucide-react";
-import { OverviewChart } from "@/components/dashboard/OverviewChart";
+  OverviewChart } from "@/components/dashboard/OverviewChart";
 import { DashboardStatsClient } from "@/components/dashboard/DashboardStatsClient";
 
 async function getDashboardData() {

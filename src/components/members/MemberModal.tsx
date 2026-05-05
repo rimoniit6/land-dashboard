@@ -7,7 +7,18 @@ import { useRouter } from "next/navigation";
 interface MemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  member?: any; // If member exists, it's edit mode
+  member?: {
+    id: number;
+    memberId: string;
+    fullName: string;
+    phone?: string;
+    address?: string;
+    status: string;
+    joinDate: Date | string;
+    nomineeName?: string;
+    nomineeRelation?: string;
+    nomineePhone?: string;
+  };
 }
 
 export function MemberModal({ isOpen, onClose, member }: MemberModalProps) {

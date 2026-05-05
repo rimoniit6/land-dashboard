@@ -224,7 +224,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                     </div>
                     {inv.returns && inv.returns.length > 0 ? (
                       <div className="space-y-2">
-                        {inv.returns.map((ret: any) => (
+                         {inv.returns.map((ret: { id: number, returnDate: Date | string, returnType: string, amount: number }) => (
                           <div key={ret.id} className="flex justify-between text-sm">
                             <span className="text-slate-500">{new Date(ret.returnDate).toLocaleDateString()}</span>
                             <span className="text-slate-700">Type: {ret.returnType === "PROFIT_AND_PRINCIPAL" ? "Profit + Principal" : "Profit"}</span>

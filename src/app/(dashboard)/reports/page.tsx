@@ -15,7 +15,7 @@ export default function ReportsPage() {
       const res = await fetch("/api/transactions?type=all");
       const data = await res.json();
       
-      const formattedData = data.map((tx: any) => ({
+       const formattedData = data.map((tx: { date: string, type: string, member?: { fullName: string, memberId: string }, description: string, amount: number }) => ({
         Date: new Date(tx.date).toLocaleDateString(),
         Type: tx.type,
         Member: tx.member ? `${tx.member.fullName} (${tx.member.memberId})` : "Company",
@@ -44,7 +44,7 @@ export default function ReportsPage() {
       const doc = new jsPDF();
       doc.text("Company Financial Ledger", 14, 15);
       
-      const tableData = data.map((tx: any) => [
+       const tableData = data.map((tx: { date: string, type: string, member?: { fullName: string }, description: string, amount: number }) => [
         new Date(tx.date).toLocaleDateString(),
         tx.type ? tx.type.replace('_', ' ') : '',
         tx.member ? tx.member.fullName : "Company",
