@@ -3,16 +3,11 @@
 import { useState } from "react";
 import { FineModal } from "./FineModal";
 import { Plus, Search, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
-export function FineList({ initialFines, members }: { initialFines: any[], members: any[] }) {
+export function FineList({ initialFines, members, isViewer = false }: { initialFines: any[]; members: any[]; isViewer?: boolean }) {
   const [fines, setFines] = useState(initialFines);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const filtered = fines.filter(
     (f) =>
@@ -27,9 +22,7 @@ export function FineList({ initialFines, members }: { initialFines: any[], membe
     try {
       const res = await fetch(`/api/fines/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      
       setFines(fines.filter((f) => f.id !== id));
-      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting fine");
@@ -128,10 +121,7 @@ export function FineList({ initialFines, members }: { initialFines: any[], membe
 
       <FineModal 
         isOpen={isModalOpen} 
-        onClose={() => {
-          setIsModalOpen(false);
-          window.location.reload(); 
-        }} 
+        onClose={() => setIsModalOpen(false)} 
         members={members} 
       />
     </div>

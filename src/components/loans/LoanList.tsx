@@ -5,10 +5,8 @@ import { LoanModal } from "./LoanModal";
 import { RepaymentModal } from "./RepaymentModal";
 import { LoanDetailsModal } from "./LoanDetailsModal";
 import { Plus, Search, Trash2, ArrowDownToLine, CheckCircle2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
-export function LoanList({ initialLoans, members }: { initialLoans: any[], members: any[] }) {
+export function LoanList({ initialLoans, members, isViewer = false }: { initialLoans: any[]; members: any[]; isViewer?: boolean }) {
   const [loans, setLoans] = useState(initialLoans);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoanModalOpen, setIsLoanModalOpen] = useState(false);
@@ -16,9 +14,6 @@ export function LoanList({ initialLoans, members }: { initialLoans: any[], membe
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<any>(null);
   const [selectedLoanForDetails, setSelectedLoanForDetails] = useState<any>(null);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const filtered = loans.filter(
     (l) =>
@@ -32,9 +27,7 @@ export function LoanList({ initialLoans, members }: { initialLoans: any[], membe
     try {
       const res = await fetch(`/api/loans/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      
       setLoans(loans.filter((l) => l.id !== id));
-      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting loan");
@@ -178,19 +171,13 @@ export function LoanList({ initialLoans, members }: { initialLoans: any[], membe
 
       <LoanModal 
         isOpen={isLoanModalOpen} 
-        onClose={() => {
-          setIsLoanModalOpen(false);
-          window.location.reload(); 
-        }} 
+        onClose={() => setIsLoanModalOpen(false)} 
         members={members}
       />
 
       <RepaymentModal 
         isOpen={isRepayModalOpen}
-        onClose={() => {
-            setIsRepayModalOpen(false);
-            window.location.reload();
-        }}
+        onClose={() => setIsRepayModalOpen(false)}
         loan={selectedLoan}
       />
 

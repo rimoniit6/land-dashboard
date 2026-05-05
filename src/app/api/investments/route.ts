@@ -6,8 +6,21 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { memberId, investmentAmount, investmentDate, businessType, durationDays, notes } = body;
 
+    if (!memberId || !investmentAmount || !investmentDate || !businessType) {
+      return NextResponse.json({ error: "Missing required fields: memberId, investmentAmount, investmentDate, businessType" }, { status: 400 });
+    }
+
+    const parsedAmount = parseFloat(investmentAmount.toString());
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return NextResponse.json({ error: "Investment amount must be a positive number" }, { status: 400 });
+    }
+
+    const member = await prisma.member.findUnique({ where: { id: parseInt(memberId) } });
+    if (!member) {
+      return NextResponse.json({ error: "Member not found" }, { status: 404 });
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      const parsedAmount = parseFloat(investmentAmount.toString());
 
       // Reduce company balance since money is taken from group
       await tx.companyAccount.update({

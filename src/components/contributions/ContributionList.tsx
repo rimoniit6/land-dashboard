@@ -3,16 +3,11 @@
 import { useState } from "react";
 import { ContributionModal } from "./ContributionModal";
 import { Plus, Search, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
-export function ContributionList({ initialContributions, members }: { initialContributions: any[], members: any[] }) {
+export function ContributionList({ initialContributions, members, isViewer = false }: { initialContributions: any[]; members: any[]; isViewer?: boolean }) {
   const [contributions, setContributions] = useState(initialContributions);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const filtered = contributions.filter(
     (c) =>
@@ -28,9 +23,7 @@ export function ContributionList({ initialContributions, members }: { initialCon
     try {
       const res = await fetch(`/api/contributions/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      
       setContributions(contributions.filter((c) => c.id !== id));
-      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting contribution");
@@ -137,10 +130,7 @@ export function ContributionList({ initialContributions, members }: { initialCon
 
       <ContributionModal 
         isOpen={isModalOpen} 
-        onClose={() => {
-          setIsModalOpen(false);
-          window.location.reload(); 
-        }} 
+        onClose={() => setIsModalOpen(false)} 
         members={members} 
       />
     </div>

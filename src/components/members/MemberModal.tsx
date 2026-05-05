@@ -78,7 +78,6 @@ export function MemberModal({ isOpen, onClose, member }: MemberModalProps) {
 
       if (!res.ok) throw new Error("Failed to save member");
       
-      router.refresh();
       onClose();
     } catch (error) {
       console.error(error);

@@ -1,5 +1,15 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextRequest } from "next/server";
+
+export async function checkAdminSession(req: NextRequest) {
+  const { getToken } = await import("next-auth/jwt");
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token || (token as any).role !== "ADMIN") {
+    return false;
+  }
+  return true;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [

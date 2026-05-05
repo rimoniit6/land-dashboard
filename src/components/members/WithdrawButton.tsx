@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export function WithdrawButton({ memberId, totalAmount, active, totalLoans = 0 }: { memberId: number, totalAmount: number, active: boolean, totalLoans?: number }) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   if (!active || totalAmount <= 0) return null;
 
@@ -21,7 +19,6 @@ export function WithdrawButton({ memberId, totalAmount, active, totalLoans = 0 }
         throw new Error(error.error || "Failed to withdraw");
       }
       alert("Withdrawal successful! Account is now inactive.");
-      router.refresh();
     } catch (error: any) {
       alert(error.message || "An error occurred.");
     } finally {

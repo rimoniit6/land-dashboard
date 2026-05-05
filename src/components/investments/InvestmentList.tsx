@@ -4,18 +4,13 @@ import { useState } from "react";
 import { InvestmentModal } from "./InvestmentModal";
 import { ProfitModal } from "./ProfitModal";
 import { Plus, Search, Trash2, HandCoins } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
-export function InvestmentList({ initialInvestments, members }: { initialInvestments: any[], members: any[] }) {
+export function InvestmentList({ initialInvestments, members, isViewer = false }: { initialInvestments: any[]; members: any[]; isViewer?: boolean }) {
   const [investments, setInvestments] = useState(initialInvestments);
   const [searchTerm, setSearchTerm] = useState("");
   const [isInvestModalOpen, setIsInvestModalOpen] = useState(false);
   const [isProfitModalOpen, setIsProfitModalOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const filtered = investments.filter(
     (i) =>
@@ -29,9 +24,7 @@ export function InvestmentList({ initialInvestments, members }: { initialInvestm
     try {
       const res = await fetch(`/api/investments/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      
       setInvestments(investments.filter((i) => i.id !== id));
-      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting investment");
@@ -155,19 +148,13 @@ export function InvestmentList({ initialInvestments, members }: { initialInvestm
 
       <InvestmentModal 
         isOpen={isInvestModalOpen} 
-        onClose={() => {
-          setIsInvestModalOpen(false);
-          window.location.reload(); 
-        }} 
+        onClose={() => setIsInvestModalOpen(false)} 
         members={members}
       />
 
       <ProfitModal 
         isOpen={isProfitModalOpen}
-        onClose={() => {
-            setIsProfitModalOpen(false);
-            window.location.reload();
-        }}
+        onClose={() => setIsProfitModalOpen(false)}
         investment={selectedInvestment}
       />
     </div>

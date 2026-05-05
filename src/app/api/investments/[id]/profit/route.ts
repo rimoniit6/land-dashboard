@@ -8,8 +8,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const body = await req.json();
     const { profitAmount, profitDate, returnPrincipal } = body;
 
+    if (!profitAmount || !profitDate) {
+      return NextResponse.json({ error: "Missing required fields: profitAmount, profitDate" }, { status: 400 });
+    }
+
+    const parsedProfit = parseFloat(profitAmount.toString());
+    if (isNaN(parsedProfit) || parsedProfit <= 0) {
+      return NextResponse.json({ error: "Profit amount must be a positive number" }, { status: 400 });
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      const parsedProfit = parseFloat(profitAmount.toString());
       
       const memberProfit = parsedProfit * 0.10;
       const companyProfit = parsedProfit * 0.90;

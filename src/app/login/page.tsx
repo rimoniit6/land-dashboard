@@ -26,7 +26,7 @@ export default function LoginPage() {
       setError("Invalid ID or Password");
       setLoading(false);
     } else {
-      router.push("/");
+      router.replace("/");
       router.refresh();
     }
   };

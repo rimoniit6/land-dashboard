@@ -7,23 +7,21 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     const id = parseInt(paramId);
     
     await prisma.$transaction(async (tx) => {
-      const distribution = await tx.distribution.findUnique({
-        where: { id },
-      });
+      const distribution = await tx.distribution.findUnique({ where: { id } });
 
       if (!distribution) throw new Error("Not found");
 
-      // Refund the amount to company balance
       await tx.companyAccount.update({
         where: { id: 1 },
         data: { balance: { increment: distribution.totalAmount } }
       });
 
-      // Delete items (auto-managed by Prisma if cascade is set, but manual is safer without verifying schema)
-      // Actually schema has onDelete: Cascade, but just in case:
+      await tx.transaction.deleteMany({
+        where: { type: "DISTRIBUTION", reference: `DISTRIBUTION_${id}` }
+      });
+
       await tx.distributionItem.deleteMany({ where: { distributionId: id } });
       
-      // Delete main distribution
       await tx.distribution.delete({ where: { id } });
 
       await tx.activityLog.create({

@@ -32,7 +32,6 @@ export function RepaymentModal({ isOpen, onClose, loan }: { isOpen: boolean, onC
 
       if (!res.ok) throw new Error("Failed to record repayment");
       
-      router.refresh();
       onClose();
       setFormData({ amount: "", paymentDate: new Date().toISOString().split("T")[0], notes: "" });
     } catch (error) {

@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 import { FileSpreadsheet, FileText, Download } from "lucide-react";
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(false);
@@ -14,6 +11,8 @@ export default function ReportsPage() {
     try {
       const res = await fetch("/api/transactions?type=all");
       const data = await res.json();
+      
+      const XLSX = await import("xlsx");
       
       const formattedData = data.map((tx: any) => ({
         Date: new Date(tx.date).toLocaleDateString(),
@@ -40,6 +39,9 @@ export default function ReportsPage() {
     try {
       const res = await fetch("/api/transactions?type=all");
       const data = await res.json();
+      
+      const jsPDF = (await import("jspdf")).jsPDF;
+      const autoTable = (await import("jspdf-autotable")).default;
       
       const doc = new jsPDF();
       doc.text("Company Financial Ledger", 14, 15);

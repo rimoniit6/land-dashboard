@@ -3,16 +3,11 @@
 import { useState } from "react";
 import { ExpenseModal } from "./ExpenseModal";
 import { Plus, Search, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
-export function ExpenseList({ initialExpenses }: { initialExpenses: any[] }) {
+export function ExpenseList({ initialExpenses, isViewer = false }: { initialExpenses: any[]; isViewer?: boolean }) {
   const [expenses, setExpenses] = useState(initialExpenses);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const filtered = expenses.filter(
     (e) =>
@@ -26,9 +21,7 @@ export function ExpenseList({ initialExpenses }: { initialExpenses: any[] }) {
     try {
       const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      
       setExpenses(expenses.filter((e) => e.id !== id));
-      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting expense");
@@ -125,10 +118,7 @@ export function ExpenseList({ initialExpenses }: { initialExpenses: any[] }) {
 
       <ExpenseModal 
         isOpen={isModalOpen} 
-        onClose={() => {
-          setIsModalOpen(false);
-          window.location.reload(); 
-        }} 
+        onClose={() => setIsModalOpen(false)} 
       />
     </div>
   );

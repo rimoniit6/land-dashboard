@@ -36,7 +36,6 @@ export function ExpenseModal({ isOpen, onClose }: ExpenseModalProps) {
 
       if (!res.ok) throw new Error("Failed to save");
       
-      router.refresh();
       onClose();
       // Reset form
       setFormData({

@@ -7,16 +7,17 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     const id = parseInt(paramId);
     
     await prisma.$transaction(async (tx) => {
-      const expense = await tx.expense.findUnique({
-        where: { id }
-      });
+      const expense = await tx.expense.findUnique({ where: { id } });
 
       if (!expense) throw new Error("Not found");
 
-      // Refund the expense back to company balance
       await tx.companyAccount.update({
         where: { id: 1 },
         data: { balance: { increment: expense.amount } }
+      });
+
+      await tx.transaction.deleteMany({
+        where: { type: "EXPENSE", amount: expense.amount, date: expense.date }
       });
 
       await tx.expense.delete({ where: { id } });

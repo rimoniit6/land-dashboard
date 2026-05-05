@@ -10,8 +10,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No members selected" }, { status: 400 });
     }
 
+    if (!totalAmount || !date) {
+      return NextResponse.json({ error: "Missing required fields: totalAmount, date" }, { status: 400 });
+    }
+
+    const parsedAmount = parseFloat(totalAmount.toString());
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return NextResponse.json({ error: "Amount must be a positive number" }, { status: 400 });
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      const parsedAmount = parseFloat(totalAmount.toString());
 
       // Check balance first
       const account = await tx.companyAccount.findFirst();

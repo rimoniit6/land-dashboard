@@ -1,11 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { User, Bell, Menu } from "lucide-react";
 import { useSidebar } from "@/components/layout/SidebarContext";
 
-export function Header() {
-  const { data: session } = useSession();
+export function Header({ userName = "Admin", userRole = "System Administrator" }: { userName?: string; userRole?: string }) {
   const { toggle } = useSidebar();
 
   return (
@@ -27,8 +25,8 @@ export function Header() {
         
         <div className="flex items-center gap-3 pl-4 border-l border-zinc-200">
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-sm font-medium text-zinc-900">{session?.user?.name || "Admin"}</span>
-            <span className="text-xs text-zinc-500">System Administrator</span>
+            <span className="text-sm font-medium text-zinc-900">{userName}</span>
+            <span className="text-xs text-zinc-500">{userRole}</span>
           </div>
           <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700">
             <User className="h-5 w-5" />

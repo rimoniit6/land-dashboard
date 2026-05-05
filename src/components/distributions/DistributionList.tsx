@@ -2,17 +2,12 @@
 
 import { useState } from "react";
 import { DistributionModal } from "./DistributionModal";
-import { Plus, Search, Trash2, Tag, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { Plus, Search, Trash2, Users } from "lucide-react";
 
-export function DistributionList({ initialDistributions, members, companyBalance }: { initialDistributions: any[], members: any[], companyBalance: number }) {
+export function DistributionList({ initialDistributions, members, isViewer = false, availableProfit = 0 }: { initialDistributions: any[]; members: any[]; isViewer?: boolean; availableProfit?: number }) {
   const [distributions, setDistributions] = useState(initialDistributions);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const filtered = distributions.filter(
     (d) =>
@@ -25,9 +20,7 @@ export function DistributionList({ initialDistributions, members, companyBalance
     try {
       const res = await fetch(`/api/distributions/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
-      
       setDistributions(distributions.filter((d) => d.id !== id));
-      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting distribution");
@@ -133,12 +126,9 @@ export function DistributionList({ initialDistributions, members, companyBalance
 
       <DistributionModal 
         isOpen={isModalOpen} 
-        onClose={() => {
-          setIsModalOpen(false);
-          window.location.reload(); 
-        }} 
+        onClose={() => setIsModalOpen(false)} 
         members={members}
-        balance={companyBalance}
+        balance={availableProfit}
       />
     </div>
   );

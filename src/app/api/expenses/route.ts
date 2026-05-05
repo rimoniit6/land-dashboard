@@ -6,8 +6,16 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { title, amount, category, date, description } = body;
 
+    if (!title || !amount || !date) {
+      return NextResponse.json({ error: "Missing required fields: title, amount, date" }, { status: 400 });
+    }
+
+    const parsedAmount = parseFloat(amount.toString());
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return NextResponse.json({ error: "Amount must be a positive number" }, { status: 400 });
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      const parsedAmount = parseFloat(amount.toString());
 
       // 1. Create expense
       const expense = await tx.expense.create({

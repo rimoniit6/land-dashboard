@@ -58,7 +58,6 @@ export function DistributionModal({ isOpen, onClose, members, balance }: { isOpe
           throw new Error(data.error || "Failed to save");
       }
       
-      router.refresh();
       onClose();
       // Reset form
       setFormData({
