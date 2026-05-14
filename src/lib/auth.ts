@@ -1,5 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,15 +14,25 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.id || !credentials?.password) return null;
 
-        // Hardcoded credentials
-        if (credentials.id === "land" && credentials.password === "land") {
-          return { id: "1", name: "Admin", email: "admin@landgroup.com", role: "ADMIN" };
-        }
-        if (credentials.id === "view" && credentials.password === "land") {
-          return { id: "2", name: "Viewer", email: "viewer@landgroup.com", role: "VIEWER" };
-        }
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.id },
+        });
 
-        return null;
+        if (!user) return null;
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) return null;
+
+        return {
+          id: user.id.toString(),
+          name: user.name,
+          username: user.username,
+          role: user.role,
+        };
       },
     }),
   ],

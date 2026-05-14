@@ -17,7 +17,7 @@ import {
   LogOut,
   X
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useSidebar } from "@/components/layout/SidebarContext";
 
 const navItems = [
@@ -32,12 +32,15 @@ const navItems = [
   { name: "Distributions", href: "/distributions", icon: ArrowRightLeft },
   { name: "Activities & Ledger", href: "/transactions", icon: FileText },
   { name: "Reports", href: "/reports", icon: FileText },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Activity Log", href: "/activity", icon: FileText, adminOnly: true },
+  { name: "Settings", href: "/settings", icon: Settings, adminOnly: true },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const { isOpen, setIsOpen } = useSidebar();
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
 
   return (
     <>
@@ -66,6 +69,8 @@ export function Sidebar() {
       
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1 scrollbar-thin scrollbar-thumb-slate-700">
         {navItems.map((item) => {
+          if (item.adminOnly && !isAdmin) return null;
+          
           const isActive = pathname === item.href;
           return (
             <Link
@@ -85,6 +90,11 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-slate-800">
+        <div className="mb-4 px-3 py-2 bg-slate-800/50 rounded-lg">
+          <p className="text-xs text-slate-500 uppercase font-semibold">Logged in as</p>
+          <p className="text-sm text-slate-200 font-medium truncate">{session?.user?.name || "User"}</p>
+          <p className="text-[10px] text-blue-400 font-bold uppercase mt-0.5">{(session?.user as any)?.role || "Viewer"}</p>
+        </div>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 w-full"

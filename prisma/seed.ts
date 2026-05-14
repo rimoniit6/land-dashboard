@@ -1,9 +1,36 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding database...");
+
+  // Seed Users
+  const hashedPassword = await bcrypt.hash("land", 10);
+
+  await prisma.user.upsert({
+    where: { username: "land" },
+    update: {},
+    create: {
+      username: "land",
+      password: hashedPassword,
+      name: "Admin",
+      role: "ADMIN",
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { username: "view" },
+    update: {},
+    create: {
+      username: "view",
+      password: hashedPassword,
+      name: "Viewer",
+      role: "VIEWER",
+    },
+  });
+  console.log("Default users seeded.");
 
   // Ensure CompanyAccount exists
   await prisma.companyAccount.upsert({
