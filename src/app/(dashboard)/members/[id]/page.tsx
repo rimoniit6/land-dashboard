@@ -9,7 +9,9 @@ import { authOptions } from "@/lib/auth";
 
 export default async function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
+  const isAuthenticated = !!session?.user;
   const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
   const resolvedParams = await params;
   const memberId = parseInt(resolvedParams.id);
   const member = await prisma.member.findUnique({
@@ -56,7 +58,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
         </div>
         <div className="flex items-center gap-3">
           <ExportPdfButton memberId={member.id} />
-          {!isViewer && (
+          {canEdit && (
              <WithdrawButton memberId={member.id} totalAmount={totalAmount} active={member.status === "ACTIVE"} totalLoans={totalLoans} />
           )}
         </div>

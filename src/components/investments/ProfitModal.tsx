@@ -29,6 +29,7 @@ export function ProfitModal({ isOpen, onClose, investment }: { isOpen: boolean, 
 
       if (!res.ok) throw new Error("Failed to save");
       
+      router.refresh();
       onClose();
       setFormData({ profitAmount: "", profitDate: new Date().toISOString().split("T")[0], returnPrincipal: false });
     } catch (error) {

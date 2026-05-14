@@ -4,13 +4,20 @@ import { useState } from "react";
 import { InvestmentModal } from "./InvestmentModal";
 import { ProfitModal } from "./ProfitModal";
 import { Plus, Search, Trash2, HandCoins } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function InvestmentList({ initialInvestments, members, isViewer = false }: { initialInvestments: any[]; members: any[]; isViewer?: boolean }) {
+export function InvestmentList({ initialInvestments, members }: { initialInvestments: any[], members: any[] }) {
   const [investments, setInvestments] = useState(initialInvestments);
   const [searchTerm, setSearchTerm] = useState("");
   const [isInvestModalOpen, setIsInvestModalOpen] = useState(false);
   const [isProfitModalOpen, setIsProfitModalOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   const filtered = investments.filter(
     (i) =>
@@ -24,7 +31,9 @@ export function InvestmentList({ initialInvestments, members, isViewer = false }
     try {
       const res = await fetch(`/api/investments/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
+      
       setInvestments(investments.filter((i) => i.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting investment");
@@ -43,7 +52,7 @@ export function InvestmentList({ initialInvestments, members, isViewer = false }
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Business Investments</h1>
           <p className="text-slate-500 mt-1">Manage member business investments and profit distribution (10/90 split).</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={() => setIsInvestModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -112,7 +121,7 @@ export function InvestmentList({ initialInvestments, members, isViewer = false }
                       {i.profitAmount ? `৳${i.profitAmount.toLocaleString()}` : "-"}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
-                      {i.status === "ACTIVE" && !isViewer && (
+                      {i.status === "ACTIVE" && canEdit && (
                           <button
                             onClick={() => handleProfitClick(i)}
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200 rounded-lg transition text-xs font-medium"
@@ -122,7 +131,7 @@ export function InvestmentList({ initialInvestments, members, isViewer = false }
                             Return + Profit
                           </button>
                       )}
-                      {!isViewer && (
+                      {canEdit && (
                         <button
                           onClick={() => handleDelete(i.id)}
                           className="inline-flex p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -148,13 +157,19 @@ export function InvestmentList({ initialInvestments, members, isViewer = false }
 
       <InvestmentModal 
         isOpen={isInvestModalOpen} 
-        onClose={() => setIsInvestModalOpen(false)} 
+        onClose={() => {
+          setIsInvestModalOpen(false);
+          window.location.reload(); 
+        }} 
         members={members}
       />
 
       <ProfitModal 
         isOpen={isProfitModalOpen}
-        onClose={() => setIsProfitModalOpen(false)}
+        onClose={() => {
+            setIsProfitModalOpen(false);
+            window.location.reload();
+        }}
         investment={selectedInvestment}
       />
     </div>

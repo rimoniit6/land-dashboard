@@ -40,4 +40,16 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Prisma migration tools and data dumps
+prisma/extract_data.ts
+prisma/import_data.ts
+prisma/sqlite_data_dump.json
+prisma/dev.db
+prisma/dev.db-journal
+
+# Local logs
+*.log
+build_output.txt
+ts_errors_utf8.log
+
 /src/generated/prisma

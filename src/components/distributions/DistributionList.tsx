@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 import { DistributionModal } from "./DistributionModal";
-import { Plus, Search, Trash2, Users } from "lucide-react";
+import { Plus, Search, Trash2, Tag, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function DistributionList({ initialDistributions, members, isViewer = false, availableProfit = 0 }: { initialDistributions: any[]; members: any[]; isViewer?: boolean; availableProfit?: number }) {
+export function DistributionList({ initialDistributions, members, companyBalance }: { initialDistributions: any[], members: any[], companyBalance: number }) {
   const [distributions, setDistributions] = useState(initialDistributions);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   const filtered = distributions.filter(
     (d) =>
@@ -20,7 +27,9 @@ export function DistributionList({ initialDistributions, members, isViewer = fal
     try {
       const res = await fetch(`/api/distributions/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
+      
       setDistributions(distributions.filter((d) => d.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting distribution");
@@ -34,7 +43,7 @@ export function DistributionList({ initialDistributions, members, isViewer = fal
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Fund Distributions</h1>
           <p className="text-slate-500 mt-1">Split company profits and distribute them among members.</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -99,7 +108,7 @@ export function DistributionList({ initialDistributions, members, isViewer = fal
                             ৳{perMember.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}
                         </td>
                         <td className="px-6 py-4 text-right space-x-2">
-                            {!isViewer && (
+                            {canEdit && (
                               <button
                                   onClick={() => handleDelete(d.id)}
                                   className="inline-flex p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -126,9 +135,12 @@ export function DistributionList({ initialDistributions, members, isViewer = fal
 
       <DistributionModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          window.location.reload(); 
+        }} 
         members={members}
-        balance={availableProfit}
+        balance={companyBalance}
       />
     </div>
   );

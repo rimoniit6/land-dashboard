@@ -34,6 +34,7 @@ export function InvestmentModal({ isOpen, onClose, members }: { isOpen: boolean,
 
       if (!res.ok) throw new Error("Failed to save");
       
+      router.refresh();
       onClose();
       // Reset form
       setFormData({

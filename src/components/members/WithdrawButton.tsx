@@ -2,11 +2,19 @@
 
 import { useState } from "react";
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export function WithdrawButton({ memberId, totalAmount, active, totalLoans = 0 }: { memberId: number, totalAmount: number, active: boolean, totalLoans?: number }) {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
+  
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  if (!active || totalAmount <= 0) return null;
+  if (!active || totalAmount <= 0 || !canEdit) return null;
 
   const handleWithdraw = async () => {
     if (!confirm(`Are you sure you want to withdraw ৳${totalAmount.toLocaleString()} and DEACTIVATE this account?`)) return;
@@ -19,6 +27,7 @@ export function WithdrawButton({ memberId, totalAmount, active, totalLoans = 0 }
         throw new Error(error.error || "Failed to withdraw");
       }
       alert("Withdrawal successful! Account is now inactive.");
+      router.refresh();
     } catch (error: any) {
       alert(error.message || "An error occurred.");
     } finally {

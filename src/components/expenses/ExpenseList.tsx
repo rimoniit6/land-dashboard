@@ -3,11 +3,18 @@
 import { useState } from "react";
 import { ExpenseModal } from "./ExpenseModal";
 import { Plus, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function ExpenseList({ initialExpenses, isViewer = false }: { initialExpenses: any[]; isViewer?: boolean }) {
+export function ExpenseList({ initialExpenses }: { initialExpenses: any[] }) {
   const [expenses, setExpenses] = useState(initialExpenses);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   const filtered = expenses.filter(
     (e) =>
@@ -21,7 +28,9 @@ export function ExpenseList({ initialExpenses, isViewer = false }: { initialExpe
     try {
       const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
+      
       setExpenses(expenses.filter((e) => e.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting expense");
@@ -35,7 +44,7 @@ export function ExpenseList({ initialExpenses, isViewer = false }: { initialExpe
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Group Expenses</h1>
           <p className="text-slate-500 mt-1">Record and track company expenses.</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -92,7 +101,7 @@ export function ExpenseList({ initialExpenses, isViewer = false }: { initialExpe
                       -৳{e.amount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {!isViewer && (
+                      {canEdit && (
                         <button
                           onClick={() => handleDelete(e.id)}
                           className="inline-flex p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -118,7 +127,10 @@ export function ExpenseList({ initialExpenses, isViewer = false }: { initialExpe
 
       <ExpenseModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          window.location.reload(); 
+        }} 
       />
     </div>
   );

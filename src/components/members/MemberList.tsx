@@ -4,12 +4,19 @@ import { useState } from "react";
 import { MemberModal } from "./MemberModal";
 import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function MemberList({ initialMembers, isViewer = false }: { initialMembers: any[]; isViewer?: boolean }) {
+export function MemberList({ initialMembers }: { initialMembers: any[] }) {
   const [members, setMembers] = useState(initialMembers);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   // Basic client-side search
   const filteredMembers = members.filter(
@@ -36,6 +43,7 @@ export function MemberList({ initialMembers, isViewer = false }: { initialMember
       const res = await fetch(`/api/members/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
       setMembers(members.filter((m) => m.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting member");
@@ -49,7 +57,7 @@ export function MemberList({ initialMembers, isViewer = false }: { initialMember
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Members</h1>
           <p className="text-slate-500 mt-1">Manage all group members and their details.</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={handleAddNew}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -117,7 +125,7 @@ export function MemberList({ initialMembers, isViewer = false }: { initialMember
                       >
                         <Eye className="h-4 w-4" />
                       </Link>
-                      {!isViewer && (
+                      {canEdit && (
                         <>
                           <button
                             onClick={() => handleEdit(member)}
@@ -152,7 +160,11 @@ export function MemberList({ initialMembers, isViewer = false }: { initialMember
 
       <MemberModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          // Reload page to get fresh server data
+          window.location.reload(); 
+        }} 
         member={selectedMember} 
       />
     </div>

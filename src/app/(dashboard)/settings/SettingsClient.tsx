@@ -42,8 +42,9 @@ export default function SettingsClient() {
       }
 
       setMessage({ text: "Database has been successfully restored!", type: "success" });
+      router.refresh();
       setTimeout(() => {
-        router.refresh();
+        window.location.reload(); 
       }, 1500);
     } catch (error: any) {
       setMessage({ text: error.message || "An error occurred while importing.", type: "error" });

@@ -5,8 +5,10 @@ import { LoanModal } from "./LoanModal";
 import { RepaymentModal } from "./RepaymentModal";
 import { LoanDetailsModal } from "./LoanDetailsModal";
 import { Plus, Search, Trash2, ArrowDownToLine, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function LoanList({ initialLoans, members, isViewer = false }: { initialLoans: any[]; members: any[]; isViewer?: boolean }) {
+export function LoanList({ initialLoans, members }: { initialLoans: any[], members: any[] }) {
   const [loans, setLoans] = useState(initialLoans);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoanModalOpen, setIsLoanModalOpen] = useState(false);
@@ -14,6 +16,11 @@ export function LoanList({ initialLoans, members, isViewer = false }: { initialL
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<any>(null);
   const [selectedLoanForDetails, setSelectedLoanForDetails] = useState<any>(null);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   const filtered = loans.filter(
     (l) =>
@@ -27,7 +34,9 @@ export function LoanList({ initialLoans, members, isViewer = false }: { initialL
     try {
       const res = await fetch(`/api/loans/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
+      
       setLoans(loans.filter((l) => l.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting loan");
@@ -52,7 +61,7 @@ export function LoanList({ initialLoans, members, isViewer = false }: { initialL
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Loan Management</h1>
           <p className="text-slate-500 mt-1">Issue group loans and track member repayments.</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={() => setIsLoanModalOpen(true)}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -129,7 +138,7 @@ export function LoanList({ initialLoans, members, isViewer = false }: { initialL
                         )}
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
-                        {l.status === "ACTIVE" && remaining > 0 && !isViewer && (
+                        {l.status === "ACTIVE" && remaining > 0 && canEdit && (
                             <button
                               onClick={(e) => handleRepayClick(e, l)}
                               className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition text-xs font-medium"
@@ -144,7 +153,7 @@ export function LoanList({ initialLoans, members, isViewer = false }: { initialL
                               <CheckCircle2 className="h-3.5 w-3.5" /> Fully Paid
                             </span>
                         )}
-                        {!isViewer && (
+                        {canEdit && (
                           <button
                             onClick={(e) => { e.stopPropagation(); handleDelete(l.id); }}
                             className="inline-flex p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -171,13 +180,19 @@ export function LoanList({ initialLoans, members, isViewer = false }: { initialL
 
       <LoanModal 
         isOpen={isLoanModalOpen} 
-        onClose={() => setIsLoanModalOpen(false)} 
+        onClose={() => {
+          setIsLoanModalOpen(false);
+          window.location.reload(); 
+        }} 
         members={members}
       />
 
       <RepaymentModal 
         isOpen={isRepayModalOpen}
-        onClose={() => setIsRepayModalOpen(false)}
+        onClose={() => {
+            setIsRepayModalOpen(false);
+            window.location.reload();
+        }}
         loan={selectedLoan}
       />
 

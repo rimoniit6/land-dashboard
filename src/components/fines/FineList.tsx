@@ -3,11 +3,18 @@
 import { useState } from "react";
 import { FineModal } from "./FineModal";
 import { Plus, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function FineList({ initialFines, members, isViewer = false }: { initialFines: any[]; members: any[]; isViewer?: boolean }) {
+export function FineList({ initialFines, members }: { initialFines: any[], members: any[] }) {
   const [fines, setFines] = useState(initialFines);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   const filtered = fines.filter(
     (f) =>
@@ -22,7 +29,9 @@ export function FineList({ initialFines, members, isViewer = false }: { initialF
     try {
       const res = await fetch(`/api/fines/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
+      
       setFines(fines.filter((f) => f.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting fine");
@@ -38,7 +47,7 @@ export function FineList({ initialFines, members, isViewer = false }: { initialF
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Fine Management</h1>
           <p className="text-slate-500 mt-1">Record and track fines collected from members.</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -95,7 +104,7 @@ export function FineList({ initialFines, members, isViewer = false }: { initialF
                       ৳{f.fineAmount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {!isViewer && (
+                      {canEdit && (
                         <button
                           onClick={() => handleDelete(f.id)}
                           className="inline-flex p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -121,7 +130,10 @@ export function FineList({ initialFines, members, isViewer = false }: { initialF
 
       <FineModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          window.location.reload(); 
+        }} 
         members={members} 
       />
     </div>

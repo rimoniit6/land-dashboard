@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Plus, PiggyBank, History } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export default function CompanyAccountClient({ account, depositHistory, isViewer = false }: any) {
+export default function CompanyAccountPage({ account, depositHistory }: any) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,8 @@ export default function CompanyAccountClient({ account, depositHistory, isViewer
     date: new Date().toISOString().split("T")[0],
     description: "",
   });
+  const { data: session } = useSession();
+  const isViewer = (session?.user as any)?.role === "VIEWER";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +30,7 @@ export default function CompanyAccountClient({ account, depositHistory, isViewer
 
       if (!res.ok) throw new Error("Failed to save");
       
+      router.refresh();
       setIsModalOpen(false);
       setFormData({ amount: "", date: new Date().toISOString().split("T")[0], description: "" });
     } catch (error) {

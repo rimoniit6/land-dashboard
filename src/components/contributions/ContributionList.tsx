@@ -3,11 +3,18 @@
 import { useState } from "react";
 import { ContributionModal } from "./ContributionModal";
 import { Plus, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export function ContributionList({ initialContributions, members, isViewer = false }: { initialContributions: any[]; members: any[]; isViewer?: boolean }) {
+export function ContributionList({ initialContributions, members }: { initialContributions: any[], members: any[] }) {
   const [contributions, setContributions] = useState(initialContributions);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+  const isViewer = (session?.user as any)?.role === "VIEWER";
+  const canEdit = isAuthenticated && !isViewer;
 
   const filtered = contributions.filter(
     (c) =>
@@ -23,7 +30,9 @@ export function ContributionList({ initialContributions, members, isViewer = fal
     try {
       const res = await fetch(`/api/contributions/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
+      
       setContributions(contributions.filter((c) => c.id !== id));
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert("Error deleting contribution");
@@ -39,7 +48,7 @@ export function ContributionList({ initialContributions, members, isViewer = fal
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Monthly Contributions</h1>
           <p className="text-slate-500 mt-1">Track and record member monthly deposits.</p>
         </div>
-        {!isViewer && (
+        {canEdit && (
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
@@ -104,7 +113,7 @@ export function ContributionList({ initialContributions, members, isViewer = fal
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {!isViewer && (
+                      {canEdit && (
                         <button
                           onClick={() => handleDelete(c.id)}
                           className="inline-flex p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -130,7 +139,10 @@ export function ContributionList({ initialContributions, members, isViewer = fal
 
       <ContributionModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          window.location.reload(); 
+        }} 
         members={members} 
       />
     </div>

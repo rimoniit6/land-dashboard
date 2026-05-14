@@ -33,6 +33,7 @@ export function LoanModal({ isOpen, onClose, members }: { isOpen: boolean, onClo
 
       if (!res.ok) throw new Error("Failed to issue loan");
       
+      router.refresh();
       onClose();
       // Reset form
       setFormData({

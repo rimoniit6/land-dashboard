@@ -1,6 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import CompanyAccountClient from "./CompanyAccountClient";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +14,6 @@ export default async function CompanyAccountPage() {
     pastDistributions,
     withdrawals,
     manualDeposits,
-    session,
   ] = await Promise.all([
     prisma.contribution.aggregate({ _sum: { amount: true } }),
     prisma.fine.aggregate({ _sum: { fineAmount: true } }),
@@ -27,9 +24,9 @@ export default async function CompanyAccountPage() {
     prisma.distribution.aggregate({ _sum: { totalAmount: true } }),
     prisma.transaction.aggregate({ _sum: { amount: true }, where: { type: "WITHDRAWAL" } }),
     prisma.transaction.aggregate({ _sum: { amount: true }, where: { type: "DEPOSIT", memberId: null } }),
-    getServerSession(authOptions),
   ]);
 
+  // USER EXACT FORMULA
   const companyBalance = 
     (contributions._sum.amount || 0) + 
     (profits._sum.companyProfit || 0) +
@@ -42,13 +39,11 @@ export default async function CompanyAccountPage() {
 
   const account = { id: 1, balance: companyBalance };
 
-  const isViewer = (session?.user as any)?.role === "VIEWER";
-
   const depositHistory = await prisma.transaction.findMany({
     where: { type: "DEPOSIT" },
     orderBy: { date: "desc" },
     take: 10,
   });
 
-  return <CompanyAccountClient account={account as any} depositHistory={depositHistory} isViewer={isViewer} />;
+  return <CompanyAccountClient account={account as any} depositHistory={depositHistory} />;
 }

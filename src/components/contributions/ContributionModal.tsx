@@ -44,6 +44,7 @@ export function ContributionModal({ isOpen, onClose, members }: ContributionModa
 
       if (!res.ok) throw new Error("Failed to save");
       
+      router.refresh();
       onClose();
       // Reset form on success
       setFormData({
