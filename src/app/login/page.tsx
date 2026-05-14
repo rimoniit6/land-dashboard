@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [id, setId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,12 +18,12 @@ export default function LoginPage() {
 
     const res = await signIn("credentials", {
       redirect: false,
-      id,
+      email,
       password,
     });
 
     if (res?.error) {
-      setError("Invalid ID or Password");
+      setError("Invalid Email or Password");
       setLoading(false);
     } else {
       router.push("/");
@@ -48,14 +48,14 @@ export default function LoginPage() {
             )}
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-700">User ID</label>
+              <label className="text-sm font-medium text-zinc-700">Email Address</label>
               <input
-                type="text"
+                type="email"
                 required
-                value={id}
-                onChange={(e) => setId(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                placeholder="Enter User ID"
+                placeholder="Enter your email"
               />
             </div>
 
@@ -67,7 +67,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                placeholder="Enter Password"
+                placeholder="Enter password"
               />
             </div>
 

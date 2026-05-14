@@ -9,28 +9,29 @@ async function main() {
   // Seed Users
   const hashedPassword = await bcrypt.hash("land", 10);
 
+  // Use emails now for NextAuth Prisma Adapter standard
   await prisma.user.upsert({
-    where: { username: "land" },
+    where: { email: "admin@land.com" },
     update: {},
     create: {
-      username: "land",
+      email: "admin@land.com",
       password: hashedPassword,
-      name: "Admin",
+      name: "Admin User",
       role: "ADMIN",
     },
   });
 
   await prisma.user.upsert({
-    where: { username: "view" },
+    where: { email: "view@land.com" },
     update: {},
     create: {
-      username: "view",
+      email: "view@land.com",
       password: hashedPassword,
-      name: "Viewer",
+      name: "Viewer User",
       role: "VIEWER",
     },
   });
-  console.log("Default users seeded.");
+  console.log("Default users seeded (admin@land.com, view@land.com).");
 
   // Ensure CompanyAccount exists
   await prisma.companyAccount.upsert({
